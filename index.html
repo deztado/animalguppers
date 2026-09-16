@@ -340,6 +340,7 @@ function start(){
 function arm(){
   if(armed) return; armed = true;
   const go = function(){
+    nudgeFilm();
     audio.play().then(function(){ paintSound(true); release(); }).catch(function(){});
   };
   const release = function(){
@@ -355,6 +356,28 @@ soundBtn.addEventListener('click', function(){
 
 /* ---- render a version ---- */
 const film = document.getElementById('film');
+
+/* Muted video is normally allowed to autoplay, but a browser will refuse
+   while the tab is still hidden — so a link opened in a background tab
+   would sit on its poster frame forever. Retry when the page becomes
+   visible, and again on the first tap or key press. */
+let filmRetry = null;
+function nudgeFilm(){
+  const v = film.querySelector('video');
+  if(v && v.paused) v.play().catch(function(){});
+}
+function playFilm(v){
+  if(filmRetry){ document.removeEventListener('visibilitychange', filmRetry); filmRetry = null; }
+  v.play().catch(function(){
+    filmRetry = function(){
+      if(document.visibilityState !== 'visible') return;
+      document.removeEventListener('visibilitychange', filmRetry);
+      filmRetry = null;
+      v.play().catch(function(){});
+    };
+    document.addEventListener('visibilitychange', filmRetry);
+  });
+}
 
 function apply(i, restartAudio){
   const V = VERSIONS[i];
@@ -375,7 +398,7 @@ function apply(i, restartAudio){
     v.setAttribute('muted',''); v.setAttribute('playsinline','');
     film.appendChild(v);
     film.hidden = false;
-    v.play().catch(function(){});
+    playFilm(v);
   } else {
     film.hidden = true;
   }
