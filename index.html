@@ -1,0 +1,419 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Animal Guppers — original animated shorts by Deztado. Watch on YouTube, TikTok, Instagram and X.">
+<meta name="theme-color" content="#04060d">
+<link rel="icon" href="assets/favicon.png" sizes="any">
+<link rel="apple-touch-icon" href="assets/favicon.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Animal Guppers">
+<meta property="og:title" content="Animal Guppers">
+<meta property="og:description" content="Original animated shorts by Deztado.">
+<meta property="og:url" content="https://animalguppers.com/">
+<meta property="og:image" content="https://animalguppers.com/assets/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Animal Guppers">
+<meta name="twitter:description" content="Original animated shorts by Deztado.">
+<meta name="twitter:image" content="https://animalguppers.com/assets/og.jpg">
+<title>Animal Guppers</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Barlow:wght@400;500&family=Share+Tech+Mono&display=swap">
+<style>
+  :root{
+    /* overwritten per variant at runtime — these are variant 1 (Signal) */
+    --void:#04060d; --panel:#0a1220; --line:#17304d;
+    --key:#3fd8ff; --key2:#b06bff; --ice:#d6e9fb; --dim:#7089a8;
+    --maxw:1120px;
+    color-scheme:dark;
+  }
+  *{box-sizing:border-box}
+  html,body{min-height:100%}
+  body{
+    margin:0; background:var(--void); color:var(--ice);
+    font-family:"Barlow",system-ui,-apple-system,"Segoe UI",sans-serif;
+    -webkit-font-smoothing:antialiased; overflow-x:hidden;
+  }
+
+  /* ---------- ambient ground ---------- */
+  .ground{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+  .ground .grid{
+    position:absolute;inset:-2px;
+    background-image:
+      linear-gradient(to right,rgba(255,255,255,.05) 1px,transparent 1px),
+      linear-gradient(to bottom,rgba(255,255,255,.05) 1px,transparent 1px);
+    background-size:64px 64px;
+    mask-image:radial-gradient(ellipse 85% 70% at 50% 40%,#000 25%,transparent 78%);
+    -webkit-mask-image:radial-gradient(ellipse 85% 70% at 50% 40%,#000 25%,transparent 78%);
+    animation:drift 42s linear infinite;
+  }
+  .ground .bloom{
+    position:absolute;inset:0;
+    background:
+      radial-gradient(ellipse 60% 45% at 78% 42%,color-mix(in srgb,var(--key) 13%,transparent),transparent 62%),
+      radial-gradient(ellipse 48% 40% at 14% 78%,color-mix(in srgb,var(--key2) 11%,transparent),transparent 64%);
+  }
+  @keyframes drift{to{background-position:64px 64px,64px 64px}}
+
+  /* full-bleed film for the cinema variants */
+  .film{position:fixed;inset:0;z-index:0;overflow:hidden}
+  .film video,.film img{width:100%;height:100%;object-fit:cover;display:block}
+  .film::after{
+    content:"";position:absolute;inset:0;
+    background:
+      linear-gradient(100deg,var(--void) 4%,color-mix(in srgb,var(--void) 72%,transparent) 44%,color-mix(in srgb,var(--void) 30%,transparent) 78%),
+      linear-gradient(to bottom,color-mix(in srgb,var(--void) 55%,transparent),transparent 32%,color-mix(in srgb,var(--void) 88%,transparent));
+  }
+  body[data-scrim="heavy"] .film::after{
+    background:
+      linear-gradient(100deg,var(--void) 10%,color-mix(in srgb,var(--void) 88%,transparent) 48%,color-mix(in srgb,var(--void) 55%,transparent) 84%),
+      linear-gradient(to bottom,color-mix(in srgb,var(--void) 70%,transparent),color-mix(in srgb,var(--void) 30%,transparent) 34%,color-mix(in srgb,var(--void) 92%,transparent));
+  }
+  body[data-mode="cinema"][data-align="center"] .film::after{
+    background:
+      radial-gradient(ellipse 72% 62% at 50% 46%,color-mix(in srgb,var(--void) 62%,transparent),var(--void) 88%),
+      linear-gradient(to bottom,color-mix(in srgb,var(--void) 62%,transparent),transparent 34%,color-mix(in srgb,var(--void) 90%,transparent));
+  }
+
+  .wrap{
+    position:relative;z-index:1;max-width:var(--maxw);margin:0 auto;
+    padding-inline:20px;
+    padding-block:clamp(20px,3.4vw,40px) clamp(30px,5vw,60px);
+  }
+
+  /* ---------- masthead ---------- */
+  .mast{display:flex;align-items:center;gap:14px;margin-bottom:clamp(20px,3.6vw,34px)}
+  .mark{
+    width:46px;height:46px;flex:none;border-radius:11px;object-fit:cover;
+    box-shadow:0 0 0 1px color-mix(in srgb,var(--key) 32%,transparent),0 0 26px color-mix(in srgb,var(--key) 24%,transparent);
+  }
+  .mast-meta{display:flex;flex-direction:column;gap:2px;min-width:0}
+  .mast-name{font-family:"Chakra Petch",system-ui,sans-serif;font-weight:600;font-size:15px;letter-spacing:.20em;text-transform:uppercase}
+  .mast-sub{font-family:"Share Tech Mono",ui-monospace,monospace;font-size:11px;letter-spacing:.14em;color:var(--dim);text-transform:uppercase}
+
+  /* ---------- controls ---------- */
+  .ctrls{margin-left:auto;display:flex;gap:8px;flex:none}
+  .ctrl{
+    display:inline-flex;align-items:center;gap:7px;
+    background:color-mix(in srgb,var(--panel) 80%,transparent);
+    border:1px solid var(--line);color:var(--ice);
+    font-family:"Share Tech Mono",ui-monospace,monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;
+    padding:9px 11px;cursor:pointer;transition:border-color .2s ease,color .2s ease;
+  }
+  .ctrl:hover,.ctrl:focus-visible{border-color:color-mix(in srgb,var(--key) 60%,transparent);color:var(--key);outline:none}
+  .ctrl:focus-visible{box-shadow:0 0 0 2px color-mix(in srgb,var(--key) 35%,transparent)}
+  .ctrl .bars{display:inline-flex;align-items:flex-end;gap:2px;height:11px}
+  .ctrl .bars i{width:2px;background:var(--key);height:4px;display:block}
+  .ctrl[data-on="true"] .bars i{animation:eq .9s ease-in-out infinite}
+  .ctrl[data-on="true"] .bars i:nth-child(2){animation-delay:.15s}
+  .ctrl[data-on="true"] .bars i:nth-child(3){animation-delay:.3s}
+  .ctrl[data-on="false"]{animation:nudge 2.6s ease-in-out infinite}
+  @keyframes eq{0%,100%{height:3px}50%{height:11px}}
+  @keyframes nudge{0%,88%,100%{border-color:var(--line)}92%{border-color:color-mix(in srgb,var(--key) 70%,transparent)}}
+
+  /* ---------- content ---------- */
+  .split{display:grid;grid-template-columns:1fr minmax(0,440px);gap:clamp(22px,4vw,48px);align-items:center}
+  body[data-mode="cinema"] .split{grid-template-columns:minmax(0,640px);min-height:58vh;align-content:center}
+  body[data-align="center"] .split{justify-items:center;text-align:center;justify-content:center}
+  body[data-align="center"] .links{width:min(100%,460px);margin-inline:auto}
+
+  .eyebrow{
+    display:inline-flex;align-items:center;gap:9px;margin:0 0 16px;
+    font-family:"Share Tech Mono",ui-monospace,monospace;font-size:11px;letter-spacing:.20em;
+    text-transform:uppercase;color:var(--key);
+  }
+  .eyebrow::before{content:"";width:26px;height:1px;background:var(--key);box-shadow:0 0 8px var(--key)}
+  body[data-align="center"] .eyebrow::after{content:"";width:26px;height:1px;background:var(--key);box-shadow:0 0 8px var(--key)}
+
+  h1{
+    font-family:"Chakra Petch",system-ui,sans-serif;font-weight:700;
+    font-size:clamp(40px,8.4vw,80px);line-height:.94;margin:0;
+    text-wrap:balance;text-transform:uppercase;
+    background:linear-gradient(103deg,var(--ice) 8%,var(--key) 48%,var(--key2) 96%);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  .byline{font-size:15px;color:var(--dim);margin:16px 0 0}
+  .byline b{color:var(--ice);font-weight:500}
+
+  .links{list-style:none;margin:clamp(20px,3vw,28px) 0 0;padding:0;display:flex;flex-direction:column;gap:10px}
+  .links a{
+    position:relative;display:flex;align-items:center;gap:15px;padding:15px 18px;
+    background:linear-gradient(94deg,color-mix(in srgb,var(--panel) 92%,transparent),color-mix(in srgb,var(--panel) 40%,transparent));
+    border:1px solid var(--line);color:var(--ice);text-decoration:none;
+    backdrop-filter:blur(3px);
+    transition:border-color .22s ease,transform .22s ease,background .22s ease;
+  }
+  .links a::before,.links a::after{content:"";position:absolute;width:11px;height:11px;border:1px solid var(--key);opacity:.55;transition:opacity .22s ease}
+  .links a::before{top:-1px;left:-1px;border-right:0;border-bottom:0}
+  .links a::after{bottom:-1px;right:-1px;border-left:0;border-top:0}
+  .links a:hover,.links a:focus-visible{
+    border-color:color-mix(in srgb,var(--key) 55%,transparent);
+    transform:translateX(5px);outline:none;
+  }
+  body[data-align="center"] .links a:hover,body[data-align="center"] .links a:focus-visible{transform:translateY(-3px)}
+  .links a:hover::before,.links a:hover::after,.links a:focus-visible::before,.links a:focus-visible::after{opacity:1}
+  .links a:focus-visible{box-shadow:0 0 0 2px color-mix(in srgb,var(--key) 35%,transparent)}
+  .ico{width:26px;height:26px;flex:none;color:var(--key)}
+  .ico svg{width:100%;height:100%;display:block;fill:currentColor}
+  .ltext{display:flex;flex-direction:column;gap:1px;min-width:0;text-align:left}
+  .lname{font-family:"Chakra Petch",system-ui,sans-serif;font-weight:600;font-size:14px;letter-spacing:.13em;text-transform:uppercase}
+  .lhandle{font-family:"Share Tech Mono",ui-monospace,monospace;font-size:12px;color:var(--dim);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .lstat{margin-left:auto;flex:none;font-family:"Share Tech Mono",ui-monospace,monospace;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim)}
+  .links a[data-state="soon"]{opacity:.5}
+  .links a[data-state="soon"] .lstat{color:var(--key2)}
+
+  /* ---------- still hero (split mode) ---------- */
+  .hero{position:relative;justify-self:center;width:100%;max-width:386px}
+  body[data-mode="cinema"] .hero{display:none}
+  .hero img{
+    display:block;width:100%;height:auto;mix-blend-mode:screen;
+    mask-image:radial-gradient(ellipse 72% 64% at 52% 38%,#000 46%,transparent 84%),linear-gradient(to bottom,#000 58%,transparent 92%);
+    -webkit-mask-image:radial-gradient(ellipse 72% 64% at 52% 38%,#000 46%,transparent 84%),linear-gradient(to bottom,#000 58%,transparent 92%);
+    mask-composite:intersect;-webkit-mask-composite:source-in;
+  }
+  .scan{position:absolute;left:0;right:0;height:22%;pointer-events:none;background:linear-gradient(to bottom,transparent,color-mix(in srgb,var(--key) 18%,transparent),transparent);animation:sweep 7.5s ease-in-out infinite}
+  @keyframes sweep{0%{top:-22%}55%{top:100%}100%{top:100%}}
+  .reticle{position:absolute;inset:auto 4% 30% auto;width:54px;height:54px;border:1px solid color-mix(in srgb,var(--key) 45%,transparent);border-radius:50%;pointer-events:none;animation:pulse 4.2s ease-in-out infinite}
+  .reticle::after{content:"";position:absolute;inset:38%;border:1px solid color-mix(in srgb,var(--key) 62%,transparent);border-radius:50%}
+  @keyframes pulse{0%,100%{transform:scale(1);opacity:.5}50%{transform:scale(1.14);opacity:.95}}
+
+  /* ---------- footer ---------- */
+  .foot{
+    margin-top:clamp(30px,5vw,52px);padding-top:18px;border-top:1px solid var(--line);
+    font-family:"Share Tech Mono",ui-monospace,monospace;font-size:11px;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--dim);display:flex;flex-wrap:wrap;gap:8px 18px;
+  }
+  body[data-align="center"] .foot{justify-content:center}
+  .foot .dot{color:var(--key)}
+  .foot #facts{display:contents}
+  .foot .fact{display:inline-flex;align-items:center;gap:7px}
+  .foot .vtag{margin-left:auto;opacity:.75}
+  body[data-align="center"] .foot .vtag{margin-left:0}
+
+  /* ---------- entrance ---------- */
+  .rise{animation:rise .7s cubic-bezier(.2,.7,.3,1) both}
+  @keyframes rise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+  .links li{animation:rise .55s cubic-bezier(.2,.7,.3,1) both}
+  .links li:nth-child(1){animation-delay:.14s}
+  .links li:nth-child(2){animation-delay:.20s}
+  .links li:nth-child(3){animation-delay:.26s}
+  .links li:nth-child(4){animation-delay:.32s}
+
+  @media (max-width:860px){
+    .split,body[data-mode="cinema"] .split{grid-template-columns:1fr;gap:18px;min-height:0}
+    .hero{max-width:290px;order:-1;margin-block:-6px -18px}
+    .reticle{display:none}
+    h1{font-size:clamp(38px,12vw,58px)}
+    .links a{padding:14px 15px}
+    .mast{flex-wrap:wrap}
+    .ctrls{width:100%;margin-left:0;order:3}
+    .film::after{background:linear-gradient(to bottom,color-mix(in srgb,var(--void) 40%,transparent),color-mix(in srgb,var(--void) 86%,transparent) 58%,var(--void))}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *,*::before,*::after{animation:none!important;transition:none!important}
+  }
+</style>
+<style>
+  *{box-sizing:border-box}
+  :root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+  img{max-width:100%}
+  [hidden]{display:none!important}
+</style>
+</head>
+<body>
+<div class="ground" aria-hidden="true"><div class="grid"></div><div class="bloom"></div></div>
+<div class="film" id="film" aria-hidden="true" hidden></div>
+
+<div class="wrap">
+  <header class="mast">
+    <img class="mark" id="mark" src="assets/logo.jpg" alt="Deztado logo" width="46" height="46">
+    <div class="mast-meta">
+      <span class="mast-name" id="markName">Deztado</span>
+      <span class="mast-sub" id="markSub">Original animation</span>
+    </div>
+    <div class="ctrls">
+      <button class="ctrl" id="sound" type="button" data-on="false" aria-pressed="false">
+        <span class="bars" aria-hidden="true"><i></i><i></i><i></i></span><span id="soundLabel">Sound off</span>
+      </button>
+      <button class="ctrl" id="shuffle" type="button" title="Show another version">&#8634; Remix</button>
+    </div>
+  </header>
+
+  <main class="split">
+    <section>
+      <p class="eyebrow rise" id="eyebrow">Transmission open</p>
+      <h1 class="rise" id="title">Animal Guppers</h1>
+      <p class="byline rise" id="byline">Created by <b>Deztado</b></p>
+      <ul class="links" id="links"></ul>
+    </section>
+    <figure class="hero">
+      <img src="assets/hero.jpg" alt="Animal Guppers character in blue tactical gear holding a shark helmet" width="700" height="1317">
+      <span class="scan" aria-hidden="true"></span>
+      <span class="reticle" aria-hidden="true"></span>
+    </figure>
+  </main>
+
+  <footer class="foot">
+    <span id="facts"></span>
+    <span class="vtag" id="vtag"></span>
+  </footer>
+</div>
+
+<script>
+/* ======================================================================
+   EDIT HERE — identity, channels, and the rotating versions.
+   Each visit advances to the next VERSION; "Remix" jumps ahead manually.
+   To retire a version, delete its block. To add one, copy a block.
+   ====================================================================== */
+const SITE = {
+  name:    "Deztado",
+  tagline: "Original animation",
+  title:   "Animal Guppers",
+  byline:  'Created by <b>Deztado</b>',
+  /* the bulleted line along the bottom — add or remove entries freely */
+  facts: [ "Character: Blue Shark", "Rank: Prime Sentinel" ],
+  channels: [
+    { key:"youtube",   label:"YouTube",   handle:"@Deztado", url:"https://www.youtube.com/@Deztado",  state:"live" },
+    { key:"tiktok",    label:"TikTok",    handle:"@deztado", url:"https://www.tiktok.com/@deztado",   state:"live" },
+    { key:"instagram", label:"Instagram", handle:"@deztado", url:"https://www.instagram.com/deztado", state:"live" },
+    { key:"x",         label:"X",         handle:"@Deztado", url:"https://x.com/Deztado",             state:"live" }
+  ]
+};
+
+const VERSIONS = [
+  { id:"signal", name:"Signal", eyebrow:"Transmission open", mode:"cinema", align:"left",
+    video:"assets/v-visor.mp4", poster:"assets/p-visor.jpg", track:"assets/a-neonpulse.mp3",
+    css:{ void:"#04060d", panel:"#0a1220", line:"#17304d", key:"#3fd8ff", key2:"#b06bff", ice:"#d6e9fb", dim:"#7089a8" } },
+
+  { id:"ignition", name:"Ignition", eyebrow:"Sequence engaged", mode:"cinema", align:"left",
+    video:"assets/v-garage.mp4", poster:"assets/p-garage.jpg", track:"assets/a-anthem.mp3",
+    css:{ void:"#08050a", panel:"#160d14", line:"#3d1b2a", key:"#ff4d6d", key2:"#4fe3ff", ice:"#ffe3e9", dim:"#a8798a" } },
+
+  { id:"predator", name:"Predator", eyebrow:"Mask online", mode:"cinema", align:"left",
+    video:"assets/v-predator.mp4", poster:"assets/p-predator.jpg", track:"assets/a-goldendream.mp3",
+    css:{ void:"#02100c", panel:"#07201a", line:"#12463a", key:"#58ffc9", key2:"#ffd166", ice:"#dffdf3", dim:"#67a394" } },
+
+  { id:"uplink", name:"Uplink", eyebrow:"Link established", mode:"cinema", align:"left", scrim:"heavy",
+    video:"assets/v-hunt.mp4", poster:"assets/p-hunt.jpg", track:"assets/a-frozenscream.mp3",
+    css:{ void:"#030a14", panel:"#0a1826", line:"#1d3d5c", key:"#7fd4ff", key2:"#e8f6ff", ice:"#eaf6ff", dim:"#6d90ad" } }
+];
+/* ==================================================================== */
+
+const ICONS = {
+  youtube:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2C0 8.1 0 12 0 12s0 3.9.5 5.8a3 3 0 0 0 2.1 2.1c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.1c.5-1.9.5-5.8.5-5.8s0-3.9-.5-5.8zM9.6 15.6V8.4l6.2 3.6-6.2 3.6z"/></svg>',
+  tiktok:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16.6 5.8a4.8 4.8 0 0 1-1.1-3.1h-3.3v13.2a2.9 2.9 0 1 1-2.1-2.8v-3.3a6.2 6.2 0 1 0 5.4 6.1V9.3a8 8 0 0 0 4.6 1.5V7.5a4.8 4.8 0 0 1-3.5-1.7z"/></svg>',
+  instagram:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.2c3.2 0 3.6 0 4.9.1 1.2.1 1.8.2 2.2.4.6.2 1 .5 1.4.9.4.4.7.8.9 1.4.2.4.3 1 .4 2.2.1 1.3.1 1.7.1 4.9s0 3.6-.1 4.9c-.1 1.2-.2 1.8-.4 2.2-.2.6-.5 1-.9 1.4-.4.4-.8.7-1.4.9-.4.2-1 .3-2.2.4-1.3.1-1.7.1-4.9.1s-3.6 0-4.9-.1c-1.2-.1-1.8-.2-2.2-.4-.6-.2-1-.5-1.4-.9-.4-.4-.7-.8-.9-1.4-.2-.4-.3-1-.4-2.2C2.2 15.6 2.2 15.2 2.2 12s0-3.6.1-4.9c.1-1.2.2-1.8.4-2.2.2-.6.5-1 .9-1.4.4-.4.8-.7 1.4-.9.4-.2 1-.3 2.2-.4C8.4 2.2 8.8 2.2 12 2.2zm0 3.1A6.7 6.7 0 1 0 18.7 12 6.7 6.7 0 0 0 12 5.3zm0 11A4.3 4.3 0 1 1 16.3 12 4.3 4.3 0 0 1 12 16.3zm6.9-11.2a1.6 1.6 0 1 1-1.6-1.6 1.6 1.6 0 0 1 1.6 1.6z"/></svg>',
+  x:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18.2 2.3h3.4l-7.4 8.5 8.7 11.5h-6.8l-5.3-7-6.1 7H1.3l7.9-9.1L.9 2.3h7l4.8 6.4zm-1.2 17.9h1.9L7.1 4.2H5z"/></svg>'
+};
+
+/* ---- which version? each visit advances one step ---- */
+function pickIndex(){
+  try{
+    const k='ag.visit', n=(parseInt(localStorage.getItem(k)||'0',10)||0);
+    localStorage.setItem(k,String(n+1));
+    return n % VERSIONS.length;
+  }catch(e){
+    return Math.floor(Math.random()*VERSIONS.length);
+  }
+}
+let idx = pickIndex();
+
+/* ---- audio: browsers block autoplay with sound until someone interacts,
+        so we try, and if refused we start on the first tap or key ---- */
+const audio = new Audio();
+audio.loop = true; audio.preload = 'auto'; audio.volume = 0.5;
+const soundBtn = document.getElementById('sound');
+const soundLabel = document.getElementById('soundLabel');
+let wantSound = true, armed = false;
+
+function paintSound(on){
+  soundBtn.dataset.on = on ? 'true' : 'false';
+  soundBtn.setAttribute('aria-pressed', on ? 'true' : 'false');
+  soundLabel.textContent = on ? 'Sound on' : 'Sound off';
+}
+function start(){
+  if(!wantSound) return Promise.resolve();
+  return audio.play().then(function(){ paintSound(true); }).catch(function(){ paintSound(false); arm(); });
+}
+function arm(){
+  if(armed) return; armed = true;
+  const go = function(){
+    audio.play().then(function(){ paintSound(true); release(); }).catch(function(){});
+  };
+  const release = function(){
+    armed = false;
+    ['pointerdown','keydown','touchstart'].forEach(function(e){ window.removeEventListener(e, go); });
+  };
+  ['pointerdown','keydown','touchstart'].forEach(function(e){ window.addEventListener(e, go, {passive:true}); });
+}
+soundBtn.addEventListener('click', function(){
+  wantSound = audio.paused;
+  if(wantSound){ start(); } else { audio.pause(); paintSound(false); }
+});
+
+/* ---- render a version ---- */
+const film = document.getElementById('film');
+
+function apply(i, restartAudio){
+  const V = VERSIONS[i];
+  const r = document.documentElement.style;
+  Object.keys(V.css).forEach(function(k){ r.setProperty('--' + k, V.css[k]); });
+
+  document.body.dataset.mode  = V.mode;
+  document.body.dataset.align = V.align;
+  document.body.dataset.scrim = V.scrim || 'normal';
+  document.getElementById('eyebrow').textContent = V.eyebrow;
+  document.getElementById('vtag').textContent = 'Ver. ' + (i+1) + '/' + VERSIONS.length + ' — ' + V.name;
+
+  film.innerHTML = '';
+  if(V.mode === 'cinema' && V.video){
+    const v = document.createElement('video');
+    v.src = V.video; v.poster = V.poster || '';
+    v.muted = true; v.loop = true; v.autoplay = true; v.playsInline = true;
+    v.setAttribute('muted',''); v.setAttribute('playsinline','');
+    film.appendChild(v);
+    film.hidden = false;
+    v.play().catch(function(){});
+  } else {
+    film.hidden = true;
+  }
+
+  if(restartAudio || audio.getAttribute === undefined){ /* no-op guard */ }
+  const nextTrack = V.track;
+  if(audio.dataset.src !== nextTrack){
+    audio.dataset.src = nextTrack;
+    audio.src = nextTrack;
+    if(!audio.paused || wantSound) start();
+  }
+}
+
+/* ---- static content ---- */
+document.getElementById('markName').textContent = SITE.name;
+document.getElementById('markSub').textContent  = SITE.tagline;
+document.getElementById('title').textContent    = SITE.title;
+document.getElementById('byline').innerHTML     = SITE.byline;
+document.getElementById('facts').innerHTML = SITE.facts.map(function(f){
+  return '<span class="fact"><span class="dot">&#9679;</span> ' + f + '</span>';
+}).join('');
+document.getElementById('links').innerHTML = SITE.channels.map(function(c){
+  const soon = c.state === 'soon';
+  return '<li><a href="' + c.url + '" target="_blank" rel="noopener noreferrer" data-state="' + c.state + '">'
+    + '<span class="ico">' + (ICONS[c.key] || '') + '</span>'
+    + '<span class="ltext"><span class="lname">' + c.label + '</span><span class="lhandle">' + c.handle + '</span></span>'
+    + '<span class="lstat">' + (soon ? 'Coming soon' : 'Follow &#8594;') + '</span></a></li>';
+}).join('');
+
+document.getElementById('shuffle').addEventListener('click', function(){
+  idx = (idx + 1) % VERSIONS.length;
+  try{ localStorage.setItem('ag.visit', String(idx + 1)); }catch(e){}
+  apply(idx, true);
+});
+
+apply(idx, false);
+paintSound(false);
+start();
+</script>
+</body>
+</html>
