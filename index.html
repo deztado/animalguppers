@@ -341,6 +341,7 @@ function arm(){
   if(armed) return; armed = true;
   const go = function(){
     nudgeFilm();
+    if(!wantSound) return;   /* respect a deliberate "Sound off" */
     audio.play().then(function(){ paintSound(true); release(); }).catch(function(){});
   };
   const release = function(){
@@ -436,6 +437,11 @@ document.getElementById('shuffle').addEventListener('click', function(){
 
 apply(idx, false);
 paintSound(false);
+/* Wire the tap-to-start fallback unconditionally. An autoplay attempt can
+   stay pending forever instead of being rejected, and in that case the
+   .catch() inside start() never runs — so arming only on rejection left
+   the page with no way to start the music or the video at all. */
+arm();
 start();
 </script>
 </body>
