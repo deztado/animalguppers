@@ -1,0 +1,175 @@
+{
+ "cell_h": 340,
+ "characters": [
+  {
+   "id": "aquarabbit",
+   "poses": 9,
+   "cell": [
+    450,
+    340
+   ],
+   "file": "aquarabbit.webp",
+   "bytes": 228456
+  },
+  {
+   "id": "blackcat",
+   "poses": 8,
+   "cell": [
+    296,
+    340
+   ],
+   "file": "blackcat.webp",
+   "bytes": 121874
+  },
+  {
+   "id": "blacksheep",
+   "poses": 9,
+   "cell": [
+    353,
+    340
+   ],
+   "file": "blacksheep.webp",
+   "bytes": 188786
+  },
+  {
+   "id": "blueshark",
+   "poses": 9,
+   "cell": [
+    427,
+    340
+   ],
+   "file": "blueshark.webp",
+   "bytes": 175838
+  },
+  {
+   "id": "greenturtle",
+   "poses": 7,
+   "cell": [
+    486,
+    340
+   ],
+   "file": "greenturtle.webp",
+   "bytes": 126430
+  },
+  {
+   "id": "labruine",
+   "poses": 8,
+   "cell": [
+    458,
+    340
+   ],
+   "file": "labruine.webp",
+   "bytes": 240866
+  },
+  {
+   "id": "ladybug",
+   "poses": 9,
+   "cell": [
+    482,
+    340
+   ],
+   "file": "ladybug.webp",
+   "bytes": 192902
+  },
+  {
+   "id": "orangelion",
+   "poses": 9,
+   "cell": [
+    409,
+    340
+   ],
+   "file": "orangelion.webp",
+   "bytes": 206488
+  },
+  {
+   "id": "pinkpig",
+   "poses": 9,
+   "cell": [
+    525,
+    340
+   ],
+   "file": "pinkpig.webp",
+   "bytes": 187172
+  },
+  {
+   "id": "redoni",
+   "poses": 7,
+   "cell": [
+    426,
+    340
+   ],
+   "file": "redoni.webp",
+   "bytes": 147164
+  },
+  {
+   "id": "redphoenix",
+   "poses": 8,
+   "cell": [
+    340,
+    340
+   ],
+   "file": "redphoenix.webp",
+   "bytes": 135810
+  },
+  {
+   "id": "whitebull",
+   "poses": 7,
+   "cell": [
+    398,
+    340
+   ],
+   "file": "whitebull.webp",
+   "bytes": 124084
+  },
+  {
+   "id": "whitehornninja",
+   "poses": 7,
+   "cell": [
+    316,
+    340
+   ],
+   "file": "whitehornninja.webp",
+   "bytes": 132958
+  },
+  {
+   "id": "whitemecha",
+   "poses": 9,
+   "cell": [
+    444,
+    340
+   ],
+   "file": "whitemecha.webp",
+   "bytes": 208518
+  },
+  {
+   "id": "whiteowl",
+   "poses": 8,
+   "cell": [
+    305,
+    340
+   ],
+   "file": "whiteowl.webp",
+   "bytes": 130400
+  },
+  {
+   "id": "wolf",
+   "poses": 8,
+   "cell": [
+    281,
+    340
+   ],
+   "file": "wolf.webp",
+   "bytes": 150248
+  },
+  {
+   "id": "yellowchic",
+   "poses": 6,
+   "cell": [
+    310,
+    340
+   ],
+   "file": "yellowchic.webp",
+   "bytes": 114920
+  }
+ ]
+}

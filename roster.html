@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="The Animal Guppers roster — every character, every pose. Original animated shorts by Deztado.">
+<meta name="theme-color" content="#04060d">
+<link rel="icon" href="favicon.png" sizes="any">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Animal Guppers">
+<meta property="og:title" content="Animal Guppers — Roster">
+<meta property="og:description" content="Every character, every pose.">
+<meta property="og:url" content="https://animalguppers.com/roster.html">
+<meta property="og:image" content="https://animalguppers.com/og.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<title>Roster — Animal Guppers</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Barlow:wght@400;500&family=Share+Tech+Mono&display=swap">
+<style>
+  :root{
+    --void:#04060d; --panel:#0a1220; --line:#17304d;
+    --key:#3fd8ff; --key2:#b06bff; --ice:#d6e9fb; --dim:#7089a8;
+    --maxw:1120px; color-scheme:dark;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--void);color:var(--ice);
+    font-family:"Barlow",system-ui,-apple-system,"Segoe UI",sans-serif;
+    min-height:100dvh;
+    background-image:
+      radial-gradient(ellipse 60% 45% at 78% 22%,color-mix(in srgb,var(--key) 10%,transparent),transparent 62%),
+      radial-gradient(ellipse 48% 40% at 14% 82%,color-mix(in srgb,var(--key2) 9%,transparent),transparent 64%);
+  }
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:clamp(18px,4vw,34px) clamp(16px,4vw,28px) 56px}
+
+  .mast{display:flex;align-items:center;gap:12px;margin-bottom:clamp(18px,4vw,30px)}
+  .mast a.back{
+    display:inline-flex;align-items:center;gap:8px;text-decoration:none;color:var(--ice);
+    border:1px solid var(--line);border-radius:10px;padding:9px 13px;background:var(--panel);
+    font-family:"Share Tech Mono",ui-monospace,monospace;font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+  }
+  .mast a.back:hover{border-color:color-mix(in srgb,var(--key) 55%,var(--line))}
+  .mast .tag{margin-left:auto;font-family:"Share Tech Mono",ui-monospace,monospace;
+    font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim)}
+
+  h1{
+    font-family:"Chakra Petch",system-ui,sans-serif;font-weight:700;
+    font-size:clamp(34px,7vw,64px);line-height:.94;letter-spacing:-.01em;margin:0 0 6px;
+    text-transform:uppercase;
+  }
+  h1 span{color:var(--key)}
+  .sub{font-family:"Share Tech Mono",ui-monospace,monospace;font-size:12px;
+    letter-spacing:.18em;text-transform:uppercase;color:var(--dim);margin:0 0 clamp(20px,4vw,30px)}
+
+  /* ---------- stage: the selected character, cycling ---------- */
+  .stage{
+    position:relative;border:1px solid var(--line);border-radius:16px;background:
+      linear-gradient(180deg,color-mix(in srgb,var(--panel) 92%,transparent),var(--void));
+    overflow:hidden;margin-bottom:clamp(16px,3vw,24px);
+  }
+  .stage .floor{
+    position:absolute;left:0;right:0;bottom:0;height:42%;pointer-events:none;
+    background:linear-gradient(to top,color-mix(in srgb,var(--key) 9%,transparent),transparent);
+  }
+  .figure{
+    height:clamp(240px,42vw,340px);margin:clamp(18px,3vw,26px) auto clamp(14px,2vw,20px);
+    background-repeat:no-repeat;background-position:0 0;
+    /* width and background-size are set per character in JS */
+    filter:drop-shadow(0 16px 26px rgba(0,0,0,.55));
+  }
+  .plate{
+    display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;
+    padding:0 clamp(14px,3vw,22px) clamp(14px,3vw,20px);position:relative;
+  }
+  .plate .nm{font-family:"Chakra Petch",system-ui,sans-serif;font-weight:700;
+    font-size:clamp(20px,4vw,30px);letter-spacing:.02em;text-transform:uppercase}
+  .plate .meta{font-family:"Share Tech Mono",ui-monospace,monospace;font-size:11px;
+    letter-spacing:.16em;text-transform:uppercase;color:var(--dim)}
+  .plate .pips{display:flex;gap:5px;margin-left:auto;align-items:center}
+  .pip{width:7px;height:7px;border-radius:50%;background:color-mix(in srgb,var(--ice) 22%,transparent)}
+  .pip.on{background:var(--key)}
+
+  /* ---------- the picker ---------- */
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:9px}
+  .chip{
+    position:relative;border:1px solid var(--line);border-radius:12px;background:var(--panel);
+    padding:8px 8px 9px;cursor:pointer;text-align:left;color:inherit;font:inherit;
+    display:flex;flex-direction:column;gap:6px;transition:border-color .15s,transform .15s;
+  }
+  .chip:hover,.chip:focus-visible{border-color:color-mix(in srgb,var(--key) 55%,var(--line));transform:translateY(-2px);outline:none}
+  .chip[aria-pressed="true"]{border-color:var(--key);background:color-mix(in srgb,var(--key) 9%,var(--panel))}
+  .chip .thumb{
+    height:76px;background-repeat:no-repeat;background-position:0 bottom;
+  }
+  .chip .cn{font-family:"Chakra Petch",system-ui,sans-serif;font-weight:600;font-size:11px;
+    letter-spacing:.10em;text-transform:uppercase;line-height:1.15}
+  .chip .cc{font-family:"Share Tech Mono",ui-monospace,monospace;font-size:10px;color:var(--dim)}
+
+  .foot{
+    margin-top:clamp(26px,5vw,42px);padding-top:16px;border-top:1px solid var(--line);
+    font-family:"Share Tech Mono",ui-monospace,monospace;font-size:11px;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--dim);display:flex;gap:8px 18px;flex-wrap:wrap;
+  }
+  .foot .dot{color:var(--key)}
+
+  @media (prefers-reduced-motion:reduce){
+    *,*::before,*::after{animation:none!important;transition:none!important}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="mast">
+    <a class="back" href="./">&#8592; Animal Guppers</a>
+    <span class="tag" id="tag"></span>
+  </div>
+
+  <h1>The <span>Roster</span></h1>
+  <p class="sub" id="sub"></p>
+
+  <section class="stage">
+    <span class="floor" aria-hidden="true"></span>
+    <div class="figure" id="figure" role="img" aria-label=""></div>
+    <div class="plate">
+      <span class="nm" id="nm"></span>
+      <span class="meta" id="meta"></span>
+      <span class="pips" id="pips" aria-hidden="true"></span>
+    </div>
+  </section>
+
+  <div class="grid" id="grid"></div>
+
+  <footer class="foot">
+    <span><span class="dot">&#9679;</span> Created by Deztado</span>
+    <span><span class="dot">&#9679;</span> <span id="cnt"></span></span>
+  </footer>
+</div>
+
+<script>
+/* ======================================================================
+   THE ROSTER. Generated from roster/roster_manifest.json — cell widths come
+   from the strips themselves, so the page cannot drift from the art.
+   ====================================================================== */
+const ROSTER = [{"id":"blueshark","name":"Blue Shark","n":9,"cw":427,"ch":340},{"id":"pinkpig","name":"Pink Pig","n":9,"cw":525,"ch":340},{"id":"aquarabbit","name":"Aqua Rabbit","n":9,"cw":450,"ch":340},{"id":"greenturtle","name":"Green Turtle","n":7,"cw":486,"ch":340},{"id":"ladybug","name":"Ladybug","n":9,"cw":482,"ch":340},{"id":"labruine","name":"La Bruine","n":8,"cw":458,"ch":340},{"id":"wolf","name":"Wolf","n":8,"cw":281,"ch":340},{"id":"yellowchic","name":"Yellow Chic","n":6,"cw":310,"ch":340},{"id":"orangelion","name":"Orange Lion","n":9,"cw":409,"ch":340},{"id":"blacksheep","name":"Black Sheep","n":9,"cw":353,"ch":340},{"id":"redoni","name":"Red Oni","n":7,"cw":426,"ch":340},{"id":"whitebull","name":"White Bull","n":7,"cw":398,"ch":340},{"id":"redphoenix","name":"Red Phoenix","n":8,"cw":340,"ch":340},{"id":"blackcat","name":"Black Cat","n":8,"cw":296,"ch":340},{"id":"whitehornninja","name":"White-Horn Ninja","n":7,"cw":316,"ch":340},{"id":"whiteowl","name":"White Owl","n":8,"cw":305,"ch":340},{"id":"whitemecha","name":"White Mecha","n":9,"cw":444,"ch":340}];
+
+const CELL_H = 340;          /* every strip is packed to this height */
+const HZ     = 12;           /* on twos — the same cadence as the shorts */
+
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const figure = document.getElementById('figure');
+const grid   = document.getElementById('grid');
+const pipsEl = document.getElementById('pips');
+
+let sel = 0, frame = 0, raf = 0, last = -1, t0 = performance.now();
+
+/* ---- build the picker ---- */
+ROSTER.forEach(function(c, i){
+  const b = document.createElement('button');
+  b.className = 'chip'; b.type = 'button';
+  b.setAttribute('aria-pressed', i === 0 ? 'true' : 'false');
+  b.innerHTML = '<span class="thumb"></span>'
+              + '<span class="cn">' + c.name + '</span>'
+              + '<span class="cc">' + c.n + ' poses</span>';
+  /* The thumb shows pose 0 ONLY.
+     It must be exactly one cell wide. Left at the chip's full width it is
+     ~112px while a narrow character's scaled cell is ~63px, so the next pose
+     in the strip bleeds in and the chip shows two figures. Scale to fit the
+     chip in BOTH axes, then size the element to that one cell and centre it. */
+  const th = b.querySelector('.thumb');
+  const s  = Math.min(76 / CELL_H, 92 / c.cw);
+  th.style.width  = (c.cw * s) + 'px';
+  th.style.height = (CELL_H * s) + 'px';
+  th.style.marginInline = 'auto';
+  th.style.backgroundImage = 'url(roster/' + c.id + '.webp)';
+  th.style.backgroundSize  = (c.cw * c.n * s) + 'px ' + (CELL_H * s) + 'px';
+  th.style.backgroundPositionX = '0px';
+  b.addEventListener('click', function(){ select(i); });
+  grid.appendChild(b);
+});
+
+function select(i){
+  sel = i; frame = 0; t0 = performance.now();
+  const c = ROSTER[i];
+  [].forEach.call(grid.children, function(el, k){
+    el.setAttribute('aria-pressed', k === i ? 'true' : 'false');
+  });
+  const h = figure.clientHeight || 340;
+  const s = h / CELL_H;
+  figure.style.width = (c.cw * s) + 'px';
+  figure.style.backgroundImage = 'url(roster/' + c.id + '.webp)';
+  figure.style.backgroundSize  = (c.cw * c.n * s) + 'px ' + h + 'px';
+  figure.setAttribute('aria-label', c.name + ', ' + c.n + ' poses');
+  document.getElementById('nm').textContent   = c.name;
+  document.getElementById('meta').textContent = c.n + ' poses';
+  document.getElementById('tag').textContent  = (i + 1) + ' / ' + ROSTER.length;
+  pipsEl.innerHTML = '';
+  for (let k = 0; k < c.n; k++){
+    const p = document.createElement('span');
+    p.className = 'pip' + (k === 0 ? ' on' : '');
+    pipsEl.appendChild(p);
+  }
+  draw(0);
+}
+
+function draw(f){
+  const c = ROSTER[sel];
+  const h = figure.clientHeight || 340;
+  const s = h / CELL_H;
+  figure.style.backgroundPositionX = (-f * c.cw * s) + 'px';
+  const kids = pipsEl.children;
+  for (let k = 0; k < kids.length; k++) kids[k].className = 'pip' + (k === f ? ' on' : '');
+}
+
+/* One rAF loop owns the cycle. Stepped at 12Hz rather than every frame, so
+   the poses read as animation on twos instead of a smooth slideshow. */
+function tick(now){
+  const step = Math.floor((now - t0) / 1000 * HZ);
+  if (step !== last){
+    last = step;
+    frame = step % ROSTER[sel].n;
+    draw(frame);
+  }
+  raf = requestAnimationFrame(tick);
+}
+
+let rt = 0;
+addEventListener('resize', function(){
+  clearTimeout(rt);
+  rt = setTimeout(function(){ select(sel); }, 150);
+});
+
+document.getElementById('sub').textContent =
+  ROSTER.length + ' characters \u00b7 ' + ROSTER.reduce(function(a,c){return a+c.n;},0) + ' poses';
+document.getElementById('cnt').textContent =
+  ROSTER.reduce(function(a,c){return a+c.n;},0) + ' poses';
+
+select(0);
+/* Reduced motion holds pose 0 rather than stopping on whatever frame it
+   happened to reach — a still roster should look composed, not paused. */
+if (!reduce) raf = requestAnimationFrame(tick);
+</script>
+</body>
+</html>
