@@ -1,0 +1,142 @@
+{
+ "band_h": 220,
+ "versions": {
+  "signal": {
+   "file": "parade_signal.webp",
+   "w": 7695,
+   "cast": [
+    {
+     "id": "blueshark",
+     "x": 0,
+     "cw": 276.11,
+     "n": 9
+    },
+    {
+     "id": "aquarabbit",
+     "x": 2485,
+     "cw": 291.33,
+     "n": 9
+    },
+    {
+     "id": "whitemecha",
+     "x": 5107,
+     "cw": 287.56,
+     "n": 9
+    }
+   ],
+   "bytes": 293276
+  },
+  "ignition": {
+   "file": "parade_ignition.webp",
+   "w": 7793,
+   "cast": [
+    {
+     "id": "ladybug",
+     "x": 0,
+     "cw": 311.89,
+     "n": 9
+    },
+    {
+     "id": "redoni",
+     "x": 2807,
+     "cw": 275.57,
+     "n": 7
+    },
+    {
+     "id": "pinkpig",
+     "x": 4736,
+     "cw": 339.67,
+     "n": 9
+    }
+   ],
+   "bytes": 250274
+  },
+  "predator": {
+   "file": "parade_predator.webp",
+   "w": 5787,
+   "cast": [
+    {
+     "id": "greenturtle",
+     "x": 0,
+     "cw": 314.43,
+     "n": 7
+    },
+    {
+     "id": "orangelion",
+     "x": 2201,
+     "cw": 264.78,
+     "n": 9
+    },
+    {
+     "id": "yellowchic",
+     "x": 4584,
+     "cw": 200.5,
+     "n": 6
+    }
+   ],
+   "bytes": 213504
+  },
+  "uplink": {
+   "file": "parade_uplink.webp",
+   "w": 6340,
+   "cast": [
+    {
+     "id": "whiteowl",
+     "x": 0,
+     "cw": 197.38,
+     "n": 8
+    },
+    {
+     "id": "whitebull",
+     "x": 1579,
+     "cw": 257.29,
+     "n": 7
+    },
+    {
+     "id": "whitehornninja",
+     "x": 3380,
+     "cw": 204.29,
+     "n": 7
+    },
+    {
+     "id": "blackcat",
+     "x": 4810,
+     "cw": 191.25,
+     "n": 8
+    }
+   ],
+   "bytes": 238174
+  },
+  "sweep": {
+   "file": "parade_sweep.webp",
+   "w": 7644,
+   "cast": [
+    {
+     "id": "blacksheep",
+     "x": 0,
+     "cw": 228.22,
+     "n": 9
+    },
+    {
+     "id": "wolf",
+     "x": 2054,
+     "cw": 182.12,
+     "n": 8
+    },
+    {
+     "id": "labruine",
+     "x": 3511,
+     "cw": 296.62,
+     "n": 8
+    },
+    {
+     "id": "redphoenix",
+     "x": 5884,
+     "cw": 220.0,
+     "n": 8
+    }
+   ],
+   "bytes": 330624
+  }
+ }
+}

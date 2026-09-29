@@ -250,31 +250,31 @@
   .reticle::after{content:"";position:absolute;inset:38%;border:1px solid color-mix(in srgb,var(--key) 62%,transparent);border-radius:50%}
   @keyframes pulse{0%,100%{transform:scale(1);opacity:.5}50%{transform:scale(1.14);opacity:.95}}
 
-  /* ---------- roster link ----------
-     A link that SHOWS the cast rather than naming it. The figure inside is one
-     character's real pose strip stepped at 12Hz, so the card carries the same
-     on-twos cadence as the wall and the shorts. Costs one extra request: only
-     the one character's strip loads, never all seventeen. */
-  .rosterlink{
-    display:flex;align-items:center;gap:14px;margin-top:14px;
-    border:1px solid var(--line);border-radius:14px;background:var(--panel);
-    padding:10px 14px 10px 10px;text-decoration:none;color:var(--ice);
-    transition:border-color .16s,transform .16s;
+  /* ---------- the band ----------
+     This version's cast, standing along the bottom of the viewport, each one
+     cycling their own poses. Fixed rather than in the flow because it reads as
+     a lineup at the foot of the SCREEN, not a row at the end of the document;
+     the wrap gets bottom padding to match so the footer never sits under it.
+
+     pointer-events:none throughout - it is scenery, and it must never swallow
+     a tap meant for a follow link. */
+  .band{
+    position:fixed;left:0;right:0;bottom:0;z-index:1;pointer-events:none;
+    height:var(--bandh);overflow:hidden;
   }
-  .rosterlink:hover,.rosterlink:focus-visible{
-    border-color:color-mix(in srgb,var(--key) 55%,var(--line));
-    transform:translateY(-2px);outline:none;
+  .band::before{
+    content:"";position:absolute;inset:0;
+    background:linear-gradient(to top,color-mix(in srgb,var(--void) 82%,transparent),transparent 70%);
   }
-  .rosterlink .cast{
-    flex:none;height:62px;background-repeat:no-repeat;background-position:0 bottom;
-    filter:drop-shadow(0 6px 10px rgba(0,0,0,.5));
+  .band .who{
+    position:absolute;bottom:0;background-repeat:no-repeat;
+    background-position-y:bottom;
+    filter:drop-shadow(0 8px 14px rgba(0,0,0,.55));
+    will-change:background-position;
   }
-  .rosterlink .rtxt{display:flex;flex-direction:column;gap:2px;min-width:0}
-  .rosterlink .rt{font-family:"Chakra Petch",system-ui,sans-serif;font-weight:600;
-    font-size:14px;letter-spacing:.13em;text-transform:uppercase}
-  .rosterlink .rs{font-family:"Share Tech Mono",ui-monospace,monospace;font-size:12px;color:var(--dim)}
-  .rosterlink .go{margin-left:auto;flex:none;font-family:"Share Tech Mono",ui-monospace,monospace;
-    font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim)}
+  body{padding-bottom:calc(var(--bandh) - 18px)}
+  :root{--bandh:clamp(104px,15vh,158px)}
+  @media (max-width:860px){ :root{--bandh:clamp(88px,12vh,120px)} }
 
   /* ---------- footer ---------- */
   .foot{
@@ -322,6 +322,7 @@
 <body>
 <div class="ground" aria-hidden="true"><div class="grid"></div><div class="bloom"></div></div>
 <div class="film" id="film" aria-hidden="true" hidden></div>
+<div class="band" id="band" aria-hidden="true"></div>
 
 <div class="wrap">
   <header class="mast">
@@ -344,14 +345,6 @@
       <h1 class="rise" id="title">Animal Guppers</h1>
       <p class="byline rise" id="byline">Created by <b>Deztado</b></p>
       <ul class="links" id="links"></ul>
-      <a class="rosterlink rise" id="rosterlink" href="roster.html">
-        <span class="cast" id="rcast" aria-hidden="true"></span>
-        <span class="rtxt">
-          <span class="rt">The Roster</span>
-          <span class="rs">17 characters &middot; 137 poses</span>
-        </span>
-        <span class="go">View &#8594;</span>
-      </a>
     </section>
     <figure class="hero">
       <img src="hero.jpg" alt="Animal Guppers character in blue tactical gear holding a shark helmet" width="700" height="1317">
@@ -391,19 +384,19 @@ const VERSIONS = [
   /* The first four are untouched. The fifth is the only contact-sheet one. */
 
   { id:"signal", name:"Signal", eyebrow:"Transmission open", mode:"cinema", align:"left",
-    video:"v-visor.mp4", poster:"p-visor.jpg", track:"a-neonpulse.mp3", cast:"aquarabbit",
+    video:"v-visor.mp4", poster:"p-visor.jpg", track:"a-neonpulse.mp3",
     css:{ void:"#04060d", panel:"#0a1220", line:"#17304d", key:"#3fd8ff", key2:"#b06bff", ice:"#d6e9fb", dim:"#7089a8" } },
 
   { id:"ignition", name:"Ignition", eyebrow:"Sequence engaged", mode:"cinema", align:"left",
-    video:"v-garage.mp4", poster:"p-garage.jpg", track:"a-anthem.mp3", cast:"ladybug",
+    video:"v-garage.mp4", poster:"p-garage.jpg", track:"a-anthem.mp3",
     css:{ void:"#08050a", panel:"#160d14", line:"#3d1b2a", key:"#ff4d6d", key2:"#4fe3ff", ice:"#ffe3e9", dim:"#a8798a" } },
 
   { id:"predator", name:"Predator", eyebrow:"Mask online", mode:"cinema", align:"left",
-    video:"v-predator.mp4", poster:"p-predator.jpg", track:"a-goldendream.mp3", cast:"greenturtle",
+    video:"v-predator.mp4", poster:"p-predator.jpg", track:"a-goldendream.mp3",
     css:{ void:"#02100c", panel:"#07201a", line:"#12463a", key:"#58ffc9", key2:"#ffd166", ice:"#dffdf3", dim:"#67a394" } },
 
   { id:"uplink", name:"Uplink", eyebrow:"Link established", mode:"cinema", align:"left", scrim:"heavy",
-    video:"v-hunt.mp4", poster:"p-hunt.jpg", track:"a-frozenscream.mp3", cast:"whiteowl",
+    video:"v-hunt.mp4", poster:"p-hunt.jpg", track:"a-frozenscream.mp3",
     css:{ void:"#030a14", panel:"#0a1826", line:"#1d3d5c", key:"#7fd4ff", key2:"#e8f6ff", ice:"#eaf6ff", dim:"#6d90ad" } },
 
   /* ---- the fifth: the wall, and her in front of it ----
@@ -415,7 +408,7 @@ const VERSIONS = [
      there are four tracks and five versions, and the two blue versions are the
      pair that should share one. */
   { id:"sweep", name:"Sweep", eyebrow:"Sweep in progress", mode:"contact", align:"left",
-    sheet:"cs-anim.webp", hero:"hero-cut.webp", track:"a-neonpulse.mp3", cast:"blueshark",
+    sheet:"cs-anim.webp", hero:"hero-cut.webp", track:"a-neonpulse.mp3",
     css:{ void:"#030814", panel:"#0a1526", line:"#1b3a5e", key:"#4fd3ff", key2:"#9b7bff", ice:"#e2f2ff", dim:"#7492b4" } }
 ];
 
@@ -679,31 +672,53 @@ function buildSheet(V){
   };
 }
 
-/* ---- the roster link's cycling character ----
-   CAST_META holds each strip's pose count and cell width, copied from
-   roster/roster_manifest.json. Inlined rather than fetched because fetch()
-   over file:// is blocked, and this page must also work from disk. */
-const CAST_META = {"aquarabbit":[9,450],"ladybug":[9,482],"greenturtle":[7,486],
-                   "whiteowl":[8,305],"blueshark":[9,427]};
-const CAST_H = 340;
-let castStop = null;
+/* ---- the band: this version's cast, dancing ----
+   PARADE is generated by build_parade.py. Each entry gives one image per
+   version plus, for every character in it, the x offset, cell width and pose
+   count of their slice - so one image serves the whole band and each figure
+   cycles inside its own range. Inlined rather than fetched: fetch() over
+   file:// is blocked and this page has to work from disk too. */
+const PARADE = {"band_h":220,"versions":{"signal":{"file":"parade_signal.webp","w":7695,"cast":[{"id":"blueshark","x":0,"cw":276.11,"n":9},{"id":"aquarabbit","x":2485,"cw":291.33,"n":9},{"id":"whitemecha","x":5107,"cw":287.56,"n":9}],"bytes":293276},"ignition":{"file":"parade_ignition.webp","w":7793,"cast":[{"id":"ladybug","x":0,"cw":311.89,"n":9},{"id":"redoni","x":2807,"cw":275.57,"n":7},{"id":"pinkpig","x":4736,"cw":339.67,"n":9}],"bytes":250274},"predator":{"file":"parade_predator.webp","w":5787,"cast":[{"id":"greenturtle","x":0,"cw":314.43,"n":7},{"id":"orangelion","x":2201,"cw":264.78,"n":9},{"id":"yellowchic","x":4584,"cw":200.5,"n":6}],"bytes":213504},"uplink":{"file":"parade_uplink.webp","w":6340,"cast":[{"id":"whiteowl","x":0,"cw":197.38,"n":8},{"id":"whitebull","x":1579,"cw":257.29,"n":7},{"id":"whitehornninja","x":3380,"cw":204.29,"n":7},{"id":"blackcat","x":4810,"cw":191.25,"n":8}],"bytes":238174},"sweep":{"file":"parade_sweep.webp","w":7644,"cast":[{"id":"blacksheep","x":0,"cw":228.22,"n":9},{"id":"wolf","x":2054,"cw":182.12,"n":8},{"id":"labruine","x":3511,"cw":296.62,"n":8},{"id":"redphoenix","x":5884,"cw":220.0,"n":8}],"bytes":330624}}};
+let bandStop = null;
 
-function buildCast(id){
-  const meta = CAST_META[id], el = document.getElementById('rcast');
-  if(!meta || !el) return null;
-  const n = meta[0], cw = meta[1], h = 62, sc = h / CAST_H;
-  el.style.width = (cw * sc) + 'px';
-  el.style.backgroundImage = 'url(roster/' + id + '.webp)';
-  el.style.backgroundSize = (cw * n * sc) + 'px ' + h + 'px';
-  el.style.backgroundPositionX = '0px';
+function buildBand(verId){
+  const band = document.getElementById('band');
+  if(!band) return null;
+  band.innerHTML = '';
+  const v = PARADE.versions[verId];
+  if(!v) return null;
+
+  const H = band.clientHeight || 130;
+  const sc = H / PARADE.band_h;
+  const n = v.cast.length;
+  const figs = v.cast.map(function(c, i){
+    const el = document.createElement('span');
+    el.className = 'who';
+    el.style.width  = (c.cw * sc) + 'px';
+    el.style.height = H + 'px';
+    el.style.backgroundImage = 'url(roster/' + v.file + ')';
+    el.style.backgroundSize  = (v.w * sc) + 'px ' + H + 'px';
+    /* spread across the width, each centred in its own share */
+    el.style.left = ((i + 0.5) / n * 100) + '%';
+    el.style.marginLeft = (-(c.cw * sc) / 2) + 'px';
+    band.appendChild(el);
+    return {el: el, c: c, phase: (i * 3) % 7};   /* stagger: never in lockstep */
+  });
+
+  function put(f, g){
+    g.el.style.backgroundPositionX = (-(g.c.x + (f % g.c.n) * g.c.cw) * sc) + 'px';
+  }
+  figs.forEach(function(g){ put(0, g); });
+
   if(matchMedia('(prefers-reduced-motion: reduce)').matches) return null;
+
   let raf = 0, last = -1;
   const t0 = performance.now();
   (function frame(now){
-    const step = Math.floor((now - t0) / 1000 * 12);      /* on twos */
+    const step = Math.floor((now - t0) / 1000 * 12);    /* on twos */
     if(step !== last){
       last = step;
-      el.style.backgroundPositionX = (-(step % n) * cw * sc) + 'px';
+      figs.forEach(function(g){ put(step + g.phase, g); });
     }
     raf = requestAnimationFrame(frame);
   })(performance.now());
@@ -721,8 +736,8 @@ function apply(i, restartAudio){
   document.getElementById('eyebrow').textContent = V.eyebrow;
   document.getElementById('vtag').textContent = 'Ver. ' + (i+1) + '/' + VERSIONS.length + ' — ' + V.name;
 
-  if(castStop){ castStop(); castStop = null; }
-  castStop = buildCast(V.cast || 'blueshark');
+  if(bandStop){ bandStop(); bandStop = null; }
+  bandStop = buildBand(V.id);
 
   /* the hero art: hero-cut.webp has real alpha and is used where the page is
      bright; hero.jpg stays the default for any future non-cinema version that
