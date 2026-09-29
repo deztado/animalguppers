@@ -250,6 +250,32 @@
   .reticle::after{content:"";position:absolute;inset:38%;border:1px solid color-mix(in srgb,var(--key) 62%,transparent);border-radius:50%}
   @keyframes pulse{0%,100%{transform:scale(1);opacity:.5}50%{transform:scale(1.14);opacity:.95}}
 
+  /* ---------- roster link ----------
+     A link that SHOWS the cast rather than naming it. The figure inside is one
+     character's real pose strip stepped at 12Hz, so the card carries the same
+     on-twos cadence as the wall and the shorts. Costs one extra request: only
+     the one character's strip loads, never all seventeen. */
+  .rosterlink{
+    display:flex;align-items:center;gap:14px;margin-top:14px;
+    border:1px solid var(--line);border-radius:14px;background:var(--panel);
+    padding:10px 14px 10px 10px;text-decoration:none;color:var(--ice);
+    transition:border-color .16s,transform .16s;
+  }
+  .rosterlink:hover,.rosterlink:focus-visible{
+    border-color:color-mix(in srgb,var(--key) 55%,var(--line));
+    transform:translateY(-2px);outline:none;
+  }
+  .rosterlink .cast{
+    flex:none;height:62px;background-repeat:no-repeat;background-position:0 bottom;
+    filter:drop-shadow(0 6px 10px rgba(0,0,0,.5));
+  }
+  .rosterlink .rtxt{display:flex;flex-direction:column;gap:2px;min-width:0}
+  .rosterlink .rt{font-family:"Chakra Petch",system-ui,sans-serif;font-weight:600;
+    font-size:14px;letter-spacing:.13em;text-transform:uppercase}
+  .rosterlink .rs{font-family:"Share Tech Mono",ui-monospace,monospace;font-size:12px;color:var(--dim)}
+  .rosterlink .go{margin-left:auto;flex:none;font-family:"Share Tech Mono",ui-monospace,monospace;
+    font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim)}
+
   /* ---------- footer ---------- */
   .foot{
     margin-top:clamp(30px,5vw,52px);padding-top:18px;border-top:1px solid var(--line);
@@ -318,6 +344,14 @@
       <h1 class="rise" id="title">Animal Guppers</h1>
       <p class="byline rise" id="byline">Created by <b>Deztado</b></p>
       <ul class="links" id="links"></ul>
+      <a class="rosterlink rise" id="rosterlink" href="roster.html">
+        <span class="cast" id="rcast" aria-hidden="true"></span>
+        <span class="rtxt">
+          <span class="rt">The Roster</span>
+          <span class="rs">17 characters &middot; 137 poses</span>
+        </span>
+        <span class="go">View &#8594;</span>
+      </a>
     </section>
     <figure class="hero">
       <img src="hero.jpg" alt="Animal Guppers character in blue tactical gear holding a shark helmet" width="700" height="1317">
@@ -357,19 +391,19 @@ const VERSIONS = [
   /* The first four are untouched. The fifth is the only contact-sheet one. */
 
   { id:"signal", name:"Signal", eyebrow:"Transmission open", mode:"cinema", align:"left",
-    video:"v-visor.mp4", poster:"p-visor.jpg", track:"a-neonpulse.mp3",
+    video:"v-visor.mp4", poster:"p-visor.jpg", track:"a-neonpulse.mp3", cast:"aquarabbit",
     css:{ void:"#04060d", panel:"#0a1220", line:"#17304d", key:"#3fd8ff", key2:"#b06bff", ice:"#d6e9fb", dim:"#7089a8" } },
 
   { id:"ignition", name:"Ignition", eyebrow:"Sequence engaged", mode:"cinema", align:"left",
-    video:"v-garage.mp4", poster:"p-garage.jpg", track:"a-anthem.mp3",
+    video:"v-garage.mp4", poster:"p-garage.jpg", track:"a-anthem.mp3", cast:"ladybug",
     css:{ void:"#08050a", panel:"#160d14", line:"#3d1b2a", key:"#ff4d6d", key2:"#4fe3ff", ice:"#ffe3e9", dim:"#a8798a" } },
 
   { id:"predator", name:"Predator", eyebrow:"Mask online", mode:"cinema", align:"left",
-    video:"v-predator.mp4", poster:"p-predator.jpg", track:"a-goldendream.mp3",
+    video:"v-predator.mp4", poster:"p-predator.jpg", track:"a-goldendream.mp3", cast:"greenturtle",
     css:{ void:"#02100c", panel:"#07201a", line:"#12463a", key:"#58ffc9", key2:"#ffd166", ice:"#dffdf3", dim:"#67a394" } },
 
   { id:"uplink", name:"Uplink", eyebrow:"Link established", mode:"cinema", align:"left", scrim:"heavy",
-    video:"v-hunt.mp4", poster:"p-hunt.jpg", track:"a-frozenscream.mp3",
+    video:"v-hunt.mp4", poster:"p-hunt.jpg", track:"a-frozenscream.mp3", cast:"whiteowl",
     css:{ void:"#030a14", panel:"#0a1826", line:"#1d3d5c", key:"#7fd4ff", key2:"#e8f6ff", ice:"#eaf6ff", dim:"#6d90ad" } },
 
   /* ---- the fifth: the wall, and her in front of it ----
@@ -381,7 +415,7 @@ const VERSIONS = [
      there are four tracks and five versions, and the two blue versions are the
      pair that should share one. */
   { id:"sweep", name:"Sweep", eyebrow:"Sweep in progress", mode:"contact", align:"left",
-    sheet:"cs-anim.webp", hero:"hero-cut.webp", track:"a-neonpulse.mp3",
+    sheet:"cs-anim.webp", hero:"hero-cut.webp", track:"a-neonpulse.mp3", cast:"blueshark",
     css:{ void:"#030814", panel:"#0a1526", line:"#1b3a5e", key:"#4fd3ff", key2:"#9b7bff", ice:"#e2f2ff", dim:"#7492b4" } }
 ];
 
@@ -645,6 +679,37 @@ function buildSheet(V){
   };
 }
 
+/* ---- the roster link's cycling character ----
+   CAST_META holds each strip's pose count and cell width, copied from
+   roster/roster_manifest.json. Inlined rather than fetched because fetch()
+   over file:// is blocked, and this page must also work from disk. */
+const CAST_META = {"aquarabbit":[9,450],"ladybug":[9,482],"greenturtle":[7,486],
+                   "whiteowl":[8,305],"blueshark":[9,427]};
+const CAST_H = 340;
+let castStop = null;
+
+function buildCast(id){
+  const meta = CAST_META[id], el = document.getElementById('rcast');
+  if(!meta || !el) return null;
+  const n = meta[0], cw = meta[1], h = 62, sc = h / CAST_H;
+  el.style.width = (cw * sc) + 'px';
+  el.style.backgroundImage = 'url(roster/' + id + '.webp)';
+  el.style.backgroundSize = (cw * n * sc) + 'px ' + h + 'px';
+  el.style.backgroundPositionX = '0px';
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches) return null;
+  let raf = 0, last = -1;
+  const t0 = performance.now();
+  (function frame(now){
+    const step = Math.floor((now - t0) / 1000 * 12);      /* on twos */
+    if(step !== last){
+      last = step;
+      el.style.backgroundPositionX = (-(step % n) * cw * sc) + 'px';
+    }
+    raf = requestAnimationFrame(frame);
+  })(performance.now());
+  return function(){ cancelAnimationFrame(raf); };
+}
+
 function apply(i, restartAudio){
   const V = VERSIONS[i];
   const r = document.documentElement.style;
@@ -655,6 +720,9 @@ function apply(i, restartAudio){
   document.body.dataset.scrim = V.scrim || 'normal';
   document.getElementById('eyebrow').textContent = V.eyebrow;
   document.getElementById('vtag').textContent = 'Ver. ' + (i+1) + '/' + VERSIONS.length + ' — ' + V.name;
+
+  if(castStop){ castStop(); castStop = null; }
+  castStop = buildCast(V.cast || 'blueshark');
 
   /* the hero art: hero-cut.webp has real alpha and is used where the page is
      bright; hero.jpg stays the default for any future non-cinema version that
