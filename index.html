@@ -113,6 +113,63 @@
   @keyframes eq{0%,100%{height:3px}50%{height:11px}}
   @keyframes nudge{0%,88%,100%{border-color:var(--line)}92%{border-color:color-mix(in srgb,var(--key) 70%,transparent)}}
 
+  /* ---------- contact-sheet wall (mode:"contact") ----------
+     One image holds every clip in a grid and each tile shows a single cell of
+     it, so the whole wall costs ONE request instead of 24.
+
+     Rows sweep sideways at staggered speeds, alternating direction, and wrap.
+     Sideways rather than the columns this started as: a 16:9 tile is wide, so a
+     row of them is the axis the shape already points along, and opposing
+     directions read as a sweep rather than as a list scrolling past.
+
+     The cursor is a focus puller: tiles near it come up sharp and saturated,
+     tiles away fall off - bounded, so nothing ever goes fully black or fully
+     soft. Everything steps at 12Hz rather than 60, so the page carries the same
+     on-twos cadence as the shorts. */
+  .sheet{position:absolute;inset:0;display:flex;flex-direction:column;gap:6px;padding:6px;overflow:hidden}
+  .sheet .row{flex:1 1 0;min-height:0;position:relative;overflow:hidden}
+  .sheet .row .inner{position:absolute;top:0;bottom:0;left:0;display:flex;gap:6px;will-change:transform}
+  .sheet .tile{
+    height:100%;aspect-ratio:16/9;flex:none;
+    background-repeat:no-repeat;
+    outline:1px solid color-mix(in srgb,var(--ice) 7%,transparent);outline-offset:-1px;
+    transform-origin:50% 50%;
+  }
+
+  /* Blue Shark over the wall.
+     The stock hero rule leans on mix-blend-mode:screen and a soft mask, which
+     works only because it was designed to sit on near-black. Screen KEEPS the
+     lighter of the two layers, so over a bright contact wall her black backdrop
+     stops disappearing and reads as a dark rectangle behind her. The fix is not
+     a stronger mask - it is to stop faking it: hero-cut.webp carries real alpha,
+     so the blend mode and the mask both come off. */
+  body[data-mode="contact"] .hero img{
+    mix-blend-mode:normal;
+    mask-image:none;-webkit-mask-image:none;
+    filter:drop-shadow(0 18px 34px rgba(0,0,0,.55));
+  }
+  body[data-mode="contact"] .hero{max-width:420px}
+
+  /* The wall needs its own scrim. The cinema scrims were built to sit under a
+     single moving image and they flatten 24 small ones into mud - scrim:"heavy"
+     put 88% void across the middle of the frame and the wall simply vanished.
+     This one is steep on the left, where the headline and the four links live,
+     and lets go by about 62% across, which is the band the wall gets to itself.
+     The bottom stop stays so the footer keeps its contrast. */
+  body[data-mode="contact"] .film::after{
+    background:
+      linear-gradient(100deg,
+        var(--void) 2%,
+        color-mix(in srgb,var(--void) 92%,transparent) 30%,
+        color-mix(in srgb,var(--void) 62%,transparent) 50%,
+        color-mix(in srgb,var(--void) 18%,transparent) 68%,
+        transparent 88%),
+      linear-gradient(to bottom,
+        color-mix(in srgb,var(--void) 48%,transparent),
+        transparent 26%,
+        color-mix(in srgb,var(--void) 78%,transparent));
+  }
+
   /* ---------- content ---------- */
   .split{display:grid;grid-template-columns:1fr minmax(0,440px);gap:clamp(22px,4vw,48px);align-items:center}
   body[data-mode="cinema"] .split{grid-template-columns:minmax(0,640px);min-height:58vh;align-content:center}
@@ -283,6 +340,8 @@ const SITE = {
 };
 
 const VERSIONS = [
+  /* The first four are untouched. The fifth is the only contact-sheet one. */
+
   { id:"signal", name:"Signal", eyebrow:"Transmission open", mode:"cinema", align:"left",
     video:"v-visor.mp4", poster:"p-visor.jpg", track:"a-neonpulse.mp3",
     css:{ void:"#04060d", panel:"#0a1220", line:"#17304d", key:"#3fd8ff", key2:"#b06bff", ice:"#d6e9fb", dim:"#7089a8" } },
@@ -297,8 +356,21 @@ const VERSIONS = [
 
   { id:"uplink", name:"Uplink", eyebrow:"Link established", mode:"cinema", align:"left", scrim:"heavy",
     video:"v-hunt.mp4", poster:"p-hunt.jpg", track:"a-frozenscream.mp3",
-    css:{ void:"#030a14", panel:"#0a1826", line:"#1d3d5c", key:"#7fd4ff", key2:"#e8f6ff", ice:"#eaf6ff", dim:"#6d90ad" } }
+    css:{ void:"#030a14", panel:"#0a1826", line:"#1d3d5c", key:"#7fd4ff", key2:"#e8f6ff", ice:"#eaf6ff", dim:"#6d90ad" } },
+
+  /* ---- the fifth: the wall, and her in front of it ----
+     The wall is cs-anim.webp: 24 clips x 3 frames, every one verified to be a
+     single continuous shot rather than a cut, so no tile flips between two
+     unrelated pictures. Built by make_anim_sheet.py in D:\Video Library\_index.
+     The palette below is hers, not the wall's: --key picks up the helmet, --key2
+     the streak in her hair. a-neonpulse.mp3 is reused from Signal deliberately -
+     there are four tracks and five versions, and the two blue versions are the
+     pair that should share one. */
+  { id:"sweep", name:"Sweep", eyebrow:"Sweep in progress", mode:"contact", align:"left",
+    sheet:"cs-anim.webp", hero:"hero-cut.webp", track:"a-neonpulse.mp3",
+    css:{ void:"#030814", panel:"#0a1526", line:"#1b3a5e", key:"#4fd3ff", key2:"#9b7bff", ice:"#e2f2ff", dim:"#7492b4" } }
 ];
+
 /* ==================================================================== */
 
 const ICONS = {
@@ -380,6 +452,173 @@ function playFilm(v){
   });
 }
 
+/* ---- contact-sheet wall ----
+   Returns its own teardown. Without that, Remix would leave the previous
+   wall's requestAnimationFrame loop and pointer listeners running, and they
+   would stack up one per press. */
+const SHEET = {
+  cols: 6,          /* clips across the source image                          */
+  clipRows: 4,      /* clip rows; 6 x 4 = the 24 clips                        */
+  frames: 3,        /* frames per clip, stacked vertically inside its cell.
+                       Was 1 while cs1.jpg was a sheet of stills. cs-anim.webp
+                       carries three frames per clip, checked for continuity -
+                       no tile flips between two different shots.             */
+  flipHz: 6         /* half the drift's 12Hz, so the tiles read as texture
+                       rather than as a second thing competing for the eye    */
+};
+/* Frames play 0,1,2,1 - a ping-pong. A plain 0,1,2 loop snaps back to the
+   start every third frame and the whole wall twitches in unison. */
+const PINGPONG = [0, 1, 2, 1];
+
+let sheetStop = null;
+
+function buildSheet(V){
+  const reduce  = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const frames  = SHEET.frames|0 || 1;
+  const imgRows = SHEET.clipRows * frames;      /* total rows in the image */
+  const wrapEl  = document.createElement('div');
+  wrapEl.className = 'sheet';
+
+  const W = film.clientWidth  || window.innerWidth;
+  const H = film.clientHeight || window.innerHeight;
+
+  /* How many bands. Tied to tile height, not to the source grid: on a tall
+     phone four rows would make each tile enormous, and on a short laptop
+     eight would make them postage stamps. */
+  const nRows = Math.max(3, Math.min(8, Math.round(H / 230)));
+  const rowH  = (H - 6 * (nRows + 1)) / nRows;
+  const tileW = rowH * 16 / 9;
+
+  const rows = [], tiles = [];
+
+  for(let r = 0; r < nRows; r++){
+    const row   = document.createElement('div'); row.className = 'row';
+    const inner = document.createElement('div'); inner.className = 'inner';
+
+    /* Each band takes one clip-row of the source, and starts at a different
+       column, so two bands showing the same clip-row are not in step. */
+    const cy    = r % SHEET.clipRows;
+    const shift = r * 2;
+    const runW  = SHEET.cols * (tileW + 6);
+    /* enough whole runs that the strip still covers the viewport at its
+       furthest displacement, which is one full run */
+    const runs  = Math.max(2, Math.ceil(W / runW) + 1);
+
+    for(let pass = 0; pass < runs; pass++){
+      for(let k = 0; k < SHEET.cols; k++){
+        const cx = (k + shift) % SHEET.cols;
+        const t  = document.createElement('div');
+        t.className = 'tile';
+        t.style.backgroundImage = 'url(' + V.sheet + ')';
+        t.style.backgroundSize  = (SHEET.cols * 100) + '% ' + (imgRows * 100) + '%';
+        t.style.backgroundPositionX = (cx * 100 / (SHEET.cols - 1)) + '%';
+        tiles.push({
+          el: t, row: r, cy: cy,
+          /* a per-tile phase, so the wall does not flip as one animal */
+          phase: (r * 7 + k * 3) % PINGPONG.length,
+          frame: -1
+        });
+        inner.appendChild(t);
+      }
+    }
+    row.appendChild(inner); wrapEl.appendChild(row);
+    rows.push({
+      inner: inner,
+      dir:   r % 2 ? -1 : 1,              /* alternate, so it sweeps */
+      speed: 18 + r * 7,                  /* px per second           */
+      off:   r * 137,
+      runW:  runW,
+      x:     0
+    });
+  }
+  film.appendChild(wrapEl);
+
+  function measure(){
+    tiles.forEach(function(t){
+      t.left = t.el.offsetLeft; t.w = t.el.offsetWidth;
+      t.cyPx = t.el.parentElement.parentElement.offsetTop + t.el.offsetHeight / 2;
+    });
+  }
+  measure();
+
+  let ptr = null, amb = 1, raf = 0, last = -1, rt = 0;
+  const t0 = performance.now();
+  const onMove = function(e){
+    const r = film.getBoundingClientRect();
+    ptr = {x: e.clientX - r.left, y: e.clientY - r.top};
+  };
+  const onLeave  = function(){ ptr = null; };
+  const onResize = function(){ clearTimeout(rt); rt = setTimeout(function(){
+    if(sheetStop){ sheetStop(); sheetStop = null; }
+    film.innerHTML = ''; sheetStop = buildSheet(V);   /* tile size is derived */
+  }, 200); };
+  window.addEventListener('pointermove',  onMove,  {passive:true});
+  window.addEventListener('pointerleave', onLeave, {passive:true});
+  window.addEventListener('resize', onResize);
+
+  function frame(now){
+    const t    = (now - t0) / 1000;
+    const step = Math.floor(t * 12);          /* on twos: 12 steps a second */
+    if(step !== last){
+      last = step;
+      const tq = step / 12;
+      amb += ((ptr ? 0 : 1) - amb) * 0.18;
+      const R = Math.max(200, Math.min(360, W * 0.28));
+
+      for(let i = 0; i < rows.length; i++){
+        const c = rows[i];
+        const o = reduce ? 0 : (tq * c.speed + c.off) % c.runW;
+        /* both directions stay inside [-runW, 0]; the strip is wide enough
+           that the viewport is covered across that whole span */
+        c.x = c.dir > 0 ? -o : -(c.runW - o);
+        c.inner.style.transform = 'translateX(' + c.x.toFixed(1) + 'px)';
+      }
+
+      /* the flip, dormant while frames === 1 */
+      const fStep = reduce ? 0 : Math.floor(t * SHEET.flipHz);
+
+      for(let i = 0; i < tiles.length; i++){
+        const ti = tiles[i], c = rows[ti.row];
+
+        if(frames > 1){
+          const f = PINGPONG[(fStep + ti.phase) % PINGPONG.length];
+          if(f !== ti.frame){
+            ti.frame = f;
+            const imgRow = ti.cy * frames + f;
+            ti.el.style.backgroundPositionY = (imgRow * 100 / (imgRows - 1)) + '%';
+          }
+        } else if(ti.frame < 0){
+          ti.frame = 0;
+          ti.el.style.backgroundPositionY = (ti.cy * 100 / (imgRows - 1)) + '%';
+        }
+
+        const cx = ti.left + c.x + ti.w / 2;
+        let f2 = 0;
+        if(ptr){
+          const dx = ptr.x - cx, dy = ptr.y - ti.cyPx;
+          f2 = Math.max(0, 1 - Math.sqrt(dx*dx + dy*dy) / R);
+          f2 = f2 * f2 * (3 - 2 * f2);
+        }
+        f2 = Math.max(f2, amb * 0.62);          /* resting state, never black */
+        ti.el.style.opacity = (0.42 + 0.58 * f2).toFixed(3);
+        ti.el.style.filter  = 'saturate(' + (0.55 + 0.65 * f2).toFixed(3) + ') brightness('
+          + (0.82 + 0.34 * f2).toFixed(3) + ')' + (reduce ? '' : ' blur(' + ((1 - f2) * 2.2).toFixed(2) + 'px)');
+        ti.el.style.transform = 'scale(' + (1 + 0.04 * f2).toFixed(4) + ')';
+      }
+    }
+    raf = requestAnimationFrame(frame);
+  }
+  raf = requestAnimationFrame(frame);
+
+  return function stop(){
+    cancelAnimationFrame(raf);
+    clearTimeout(rt);
+    window.removeEventListener('pointermove',  onMove);
+    window.removeEventListener('pointerleave', onLeave);
+    window.removeEventListener('resize', onResize);
+  };
+}
+
 function apply(i, restartAudio){
   const V = VERSIONS[i];
   const r = document.documentElement.style;
@@ -391,8 +630,21 @@ function apply(i, restartAudio){
   document.getElementById('eyebrow').textContent = V.eyebrow;
   document.getElementById('vtag').textContent = 'Ver. ' + (i+1) + '/' + VERSIONS.length + ' — ' + V.name;
 
+  /* the hero art: hero-cut.webp has real alpha and is used where the page is
+     bright; hero.jpg stays the default for any future non-cinema version that
+     sits on the dark panel and wants the screen blend. */
+  const heroImg = document.querySelector('.hero img');
+  if(heroImg){
+    const wantHero = V.hero || 'hero.jpg';
+    if(!heroImg.src.endsWith(wantHero)) heroImg.src = wantHero;
+  }
+
+  if(sheetStop){ sheetStop(); sheetStop = null; }
   film.innerHTML = '';
-  if(V.mode === 'cinema' && V.video){
+  if(V.mode === 'contact' && V.sheet){
+    film.hidden = false;
+    sheetStop = buildSheet(V);
+  } else if(V.mode === 'cinema' && V.video){
     const v = document.createElement('video');
     v.src = V.video; v.poster = V.poster || '';
     v.muted = true; v.loop = true; v.autoplay = true; v.playsInline = true;
