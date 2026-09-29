@@ -150,6 +150,20 @@
   }
   body[data-mode="contact"] .hero{max-width:420px}
 
+  /* Phone layout for the wall.
+     The stock mobile rule pulls the hero to the top with order:-1, which is
+     right for a cinema version where she IS the page. In contact mode it
+     pushed the headline and all four follow links below the fold - you had to
+     scroll to reach the only things on the page that do anything. The links
+     are the point of the site, so here she comes after them and sits smaller;
+     the wall behind is already carrying the picture. */
+  @media (max-width:860px){
+    body[data-mode="contact"] .hero{
+      order:1;max-width:210px;justify-self:center;margin-block:4px 0;
+      opacity:.92;
+    }
+  }
+
   /* The wall needs its own scrim. The cinema scrims were built to sit under a
      single moving image and they flatten 24 small ones into mud - scrim:"heavy"
      put 88% void across the middle of the frame and the wall simply vanished.
@@ -482,10 +496,22 @@ function buildSheet(V){
   const W = film.clientWidth  || window.innerWidth;
   const H = film.clientHeight || window.innerHeight;
 
-  /* How many bands. Tied to tile height, not to the source grid: on a tall
-     phone four rows would make each tile enormous, and on a short laptop
-     eight would make them postage stamps. */
-  const nRows = Math.max(3, Math.min(8, Math.round(H / 230)));
+  /* How many bands.
+     This was H/230, which gave four bands and 218px-tall tiles - so big that
+     only about three and a half clips were visible per row and the thing
+     stopped reading as a contact sheet at all. A contact sheet is legible
+     because it shows MANY frames at once, and on a 390px phone a 16:9 tile was
+     362px wide - ONE clip visible at a time, which is a slideshow, not a wall.
+
+     The real constraint is not a tile size, it is how many clips are visible
+     at once - so the cap is expressed that way: never so tall that fewer than
+     ~3.6 tiles fit across. At 1440 and at 1280 that is not the binding limit,
+     so the wide layout comes out byte-identical to the one that was already
+     right; at 820 it is binding, which is what stops a tablet from showing two
+     enormous tiles the way the phone showed one. Desktop was not the
+     complaint, and this deliberately does not change it. */
+  const target = W < 520 ? 104 : Math.min(230, W * 9 / (16 * 3.6));
+  const nRows  = Math.max(4, Math.min(10, Math.round(H / target)));
   const rowH  = (H - 6 * (nRows + 1)) / nRows;
   const tileW = rowH * 16 / 9;
 
