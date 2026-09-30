@@ -487,7 +487,21 @@ const PINGPONG = [0, 1, 2, 1];
 let sheetStop = null;
 
 function buildSheet(V){
-  const reduce  = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  /* `reduce` used to be an off switch and the wall simply died - which is
+     what his phone was showing, measured at 1 distinct row position across
+     30 frames. The query asks for motion to be REDUCED. So: keep moving,
+     slowly. CALM is the multiplier the whole wall runs at. */
+  const mq      = matchMedia('(prefers-reduced-motion: reduce)');
+  let   reduce  = mq.matches;
+  const CALM    = 0.30;                 /* drift speed when reduce is on */
+  /* 96 tiles each carrying an animated blur is the single most expensive
+     thing here, and phones are where it hurts. 520 is the width the tile
+     sizing already switches on, so nothing wider changes at all. */
+  const softBlur = (window.innerWidth || 9999) >= 520;
+  /* read once was the bug: change the OS setting and the page kept its old
+     answer until something else forced a rebuild */
+  const onMQ = function(e){ reduce = e.matches; };
+  if(mq.addEventListener) mq.addEventListener('change', onMQ);
   const frames  = SHEET.frames|0 || 1;
   const imgRows = SHEET.clipRows * frames;      /* total rows in the image */
   const wrapEl  = document.createElement('div');
@@ -593,7 +607,7 @@ function buildSheet(V){
 
       for(let i = 0; i < rows.length; i++){
         const c = rows[i];
-        const o = reduce ? 0 : (tq * c.speed + c.off) % c.runW;
+        const o = (tq * c.speed * (reduce ? CALM : 1) + c.off) % c.runW;
         /* both directions stay inside [-runW, 0]; the strip is wide enough
            that the viewport is covered across that whole span */
         c.x = c.dir > 0 ? -o : -(c.runW - o);
@@ -601,7 +615,7 @@ function buildSheet(V){
       }
 
       /* the flip, dormant while frames === 1 */
-      const fStep = reduce ? 0 : Math.floor(t * SHEET.flipHz);
+      const fStep = Math.floor(t * SHEET.flipHz * (reduce ? 0.25 : 1));
 
       for(let i = 0; i < tiles.length; i++){
         const ti = tiles[i], c = rows[ti.row];
@@ -628,7 +642,7 @@ function buildSheet(V){
         f2 = Math.max(f2, amb * 0.62);          /* resting state, never black */
         ti.el.style.opacity = (0.42 + 0.58 * f2).toFixed(3);
         ti.el.style.filter  = 'saturate(' + (0.55 + 0.65 * f2).toFixed(3) + ') brightness('
-          + (0.82 + 0.34 * f2).toFixed(3) + ')' + (reduce ? '' : ' blur(' + ((1 - f2) * 2.2).toFixed(2) + 'px)');
+          + (0.82 + 0.34 * f2).toFixed(3) + ')' + ((reduce || !softBlur) ? '' : ' blur(' + ((1 - f2) * 2.2).toFixed(2) + 'px)');
         ti.el.style.transform = 'scale(' + (1 + 0.04 * f2).toFixed(4) + ')';
       }
     }
@@ -638,6 +652,7 @@ function buildSheet(V){
 
   return function stop(){
     cancelAnimationFrame(raf);
+    if(mq.removeEventListener) mq.removeEventListener('change', onMQ);
     clearTimeout(rt);
     window.removeEventListener('pointermove',  onMove);
     window.removeEventListener('pointerleave', onLeave);
