@@ -92,6 +92,13 @@
   .chip .thumb{
     height:76px;background-repeat:no-repeat;background-position:0 bottom;
   }
+  /* Placeholder for a thumb whose strip has not been fetched yet. Scoped to
+     :not([data-loaded]) on purpose — once the strip is in, this disappears,
+     so it never leaves a tinted rectangle showing through the transparent
+     parts of a character cutout. */
+  .chip .thumb:not([data-loaded]){
+    background-color:color-mix(in srgb,var(--ice) 5%,transparent);border-radius:6px;
+  }
   .chip .cn{font-family:"Chakra Petch",system-ui,sans-serif;font-weight:600;font-size:11px;
     letter-spacing:.10em;text-transform:uppercase;line-height:1.15}
   .chip .cc{font-family:"Share Tech Mono",ui-monospace,monospace;font-size:10px;color:var(--dim)}
@@ -155,6 +162,19 @@ const pipsEl = document.getElementById('pips');
 let sel = 0, frame = 0, raf = 0, last = -1, t0 = performance.now();
 
 /* ---- build the picker ---- */
+/* ⚠️ THE STRIPS ARE LOADED ON DEMAND, NOT UP FRONT.
+   A chip shows pose 0 of a character, but the only thing that can supply it
+   is the character's FULL strip (roster/<id>.webp, 115–240 KB each). An image
+   cannot be fetched in part, so setting background-image on all 17 chips at
+   build time downloaded 2.81 MB before the page was usable — on a phone, over
+   mobile data, for a picker mostly below the fold.
+
+   So: record the URL, don't fetch it. An IntersectionObserver fetches each
+   strip just before its chip scrolls into view and then stops watching it.
+   The stage still loads exactly one strip immediately (the selected
+   character), which is the 175 KB that first paint actually needs. */
+const thumbs = [];
+
 ROSTER.forEach(function(c, i){
   const b = document.createElement('button');
   b.className = 'chip'; b.type = 'button';
@@ -172,12 +192,35 @@ ROSTER.forEach(function(c, i){
   th.style.width  = (c.cw * s) + 'px';
   th.style.height = (CELL_H * s) + 'px';
   th.style.marginInline = 'auto';
-  th.style.backgroundImage = 'url(roster/' + c.id + '.webp)';
   th.style.backgroundSize  = (c.cw * c.n * s) + 'px ' + (CELL_H * s) + 'px';
   th.style.backgroundPositionX = '0px';
+  /* width/height are set inline above, so a deferred strip cannot reflow the
+     grid when it arrives — the box is already the right size. */
+  th.dataset.strip = 'roster/' + c.id + '.webp';
+  thumbs.push(th);
   b.addEventListener('click', function(){ select(i); });
   grid.appendChild(b);
 });
+
+function loadThumb(th){
+  if (th.dataset.loaded) return;
+  th.dataset.loaded = '1';
+  th.style.backgroundImage = 'url(' + th.dataset.strip + ')';
+}
+
+if ('IntersectionObserver' in window){
+  /* 300px of margin so a strip is already decoding by the time the chip is
+     actually visible — scrolling the picker should not show empty boxes. */
+  const io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if (e.isIntersecting){ loadThumb(e.target); io.unobserve(e.target); }
+    });
+  }, {rootMargin: '300px 0px'});
+  thumbs.forEach(function(th){ io.observe(th); });
+} else {
+  /* No observer: behave exactly as before rather than showing blank chips. */
+  thumbs.forEach(loadThumb);
+}
 
 function select(i){
   sel = i; frame = 0; t0 = performance.now();
@@ -191,6 +234,9 @@ function select(i){
   figure.style.backgroundImage = 'url(roster/' + c.id + '.webp)';
   figure.style.backgroundSize  = (c.cw * c.n * s) + 'px ' + h + 'px';
   figure.setAttribute('aria-label', c.name + ', ' + c.n + ' poses');
+  /* Clicking a chip means its strip is wanted now; the stage fetch above and
+     this call hit the same URL, so the browser serves one request. */
+  if (thumbs[i]) loadThumb(thumbs[i]);
   document.getElementById('nm').textContent   = c.name;
   document.getElementById('meta').textContent = c.n + ' poses';
   document.getElementById('tag').textContent  = (i + 1) + ' / ' + ROSTER.length;
@@ -231,7 +277,7 @@ addEventListener('resize', function(){
 });
 
 document.getElementById('sub').textContent =
-  ROSTER.length + ' characters \u00b7 ' + ROSTER.reduce(function(a,c){return a+c.n;},0) + ' poses';
+  ROSTER.length + ' characters · ' + ROSTER.reduce(function(a,c){return a+c.n;},0) + ' poses';
 document.getElementById('cnt').textContent =
   ROSTER.reduce(function(a,c){return a+c.n;},0) + ' poses';
 
