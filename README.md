@@ -25,8 +25,8 @@ audio around 3 MB. Dropping in a raw 25 MB file will make the page crawl.
 
 ```
 ffmpeg -i in.mp4 -an -vf scale=1280:-2 -c:v libx264 -crf 31 -preset slow \
-       -pix_fmt yuv420p -movflags +faststart assets/v-name.mp4
-ffmpeg -i in.mp3 -vn -c:a libmp3lame -b:a 104k assets/a-name.mp3
+       -pix_fmt yuv420p -movflags +faststart v-name.mp4
+ffmpeg -i in.mp3 -vn -c:a libmp3lame -b:a 104k a-name.mp3
 ```
 
 ## Notes
