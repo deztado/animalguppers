@@ -7,6 +7,7 @@
 <meta name="theme-color" content="#04060d">
 <link rel="icon" href="favicon.png" sizes="any">
 <link rel="apple-touch-icon" href="favicon.png">
+<link rel="canonical" href="https://animalguppers.com/">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Animal Guppers">
 <meta property="og:title" content="Animal Guppers">
@@ -19,16 +20,14 @@
 <meta name="twitter:title" content="Animal Guppers">
 <meta name="twitter:description" content="Original animated shorts by Deztado.">
 <meta name="twitter:image" content="https://animalguppers.com/og.jpg">
+<meta name="twitter:site" content="@Deztado">
+<meta name="twitter:creator" content="@Deztado">
 <title>Animal Guppers</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Barlow:wght@400;500&family=Share+Tech+Mono&display=swap">
+<link rel="stylesheet" href="tokens.css">
 <style>
-  :root{
-    /* overwritten per variant at runtime — these are variant 1 (Signal) */
-    --void:#04060d; --panel:#0a1220; --line:#17304d;
-    --key:#3fd8ff; --key2:#b06bff; --ice:#d6e9fb; --dim:#7089a8;
-    --maxw:1120px;
-    color-scheme:dark;
-  }
+  /* :root design tokens live in tokens.css — overwritten per variant at
+     runtime by apply(); tokens.css holds variant 1 (Signal) */
   *{box-sizing:border-box}
   html,body{min-height:100%}
   body{

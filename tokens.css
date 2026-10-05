@@ -1,0 +1,10 @@
+/* Shared design tokens for index.html and roster.html — the single source of
+   truth for the theme. index.html overwrites these per variant at runtime
+   (apply() sets them as inline styles on <html>, which beat this sheet);
+   the values here are variant 1 (Signal), the default both pages start on. */
+:root{
+  --void:#04060d; --panel:#0a1220; --line:#17304d;
+  --key:#3fd8ff; --key2:#b06bff; --ice:#d6e9fb; --dim:#7089a8;
+  --maxw:1120px;
+  color-scheme:dark;
+}

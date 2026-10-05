@@ -6,6 +6,7 @@
 <meta name="description" content="The Animal Guppers roster — every character, every pose. Original animated shorts by Deztado.">
 <meta name="theme-color" content="#04060d">
 <link rel="icon" href="favicon.png" sizes="any">
+<link rel="canonical" href="https://animalguppers.com/roster.html">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Animal Guppers">
 <meta property="og:title" content="Animal Guppers — Roster">
@@ -13,14 +14,16 @@
 <meta property="og:url" content="https://animalguppers.com/roster.html">
 <meta property="og:image" content="https://animalguppers.com/og.jpg">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Animal Guppers — Roster">
+<meta name="twitter:description" content="Every character, every pose.">
+<meta name="twitter:image" content="https://animalguppers.com/og.jpg">
+<meta name="twitter:site" content="@Deztado">
+<meta name="twitter:creator" content="@Deztado">
 <title>Roster — Animal Guppers</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Barlow:wght@400;500&family=Share+Tech+Mono&display=swap">
+<link rel="stylesheet" href="tokens.css">
 <style>
-  :root{
-    --void:#04060d; --panel:#0a1220; --line:#17304d;
-    --key:#3fd8ff; --key2:#b06bff; --ice:#d6e9fb; --dim:#7089a8;
-    --maxw:1120px; color-scheme:dark;
-  }
+  /* :root design tokens live in tokens.css, shared with index.html */
   *{box-sizing:border-box}
   html,body{margin:0;padding:0}
   body{
@@ -146,8 +149,10 @@
 
 <script>
 /* ======================================================================
-   THE ROSTER. Generated from roster/roster_manifest.json — cell widths come
-   from the strips themselves, so the page cannot drift from the art.
+   THE ROSTER. Hardcoded inline. The values were copied from
+   roster/roster_manifest.json, which exists but is NOT read at runtime —
+   if a strip is re-packed, update this array by hand to match the manifest
+   or the chips will drift from the art.
    ====================================================================== */
 const ROSTER = [{"id":"blueshark","name":"Blue Shark","n":9,"cw":427,"ch":340},{"id":"pinkpig","name":"Pink Pig","n":9,"cw":525,"ch":340},{"id":"aquarabbit","name":"Aqua Rabbit","n":9,"cw":450,"ch":340},{"id":"greenturtle","name":"Green Turtle","n":7,"cw":486,"ch":340},{"id":"ladybug","name":"Ladybug","n":9,"cw":482,"ch":340},{"id":"labruine","name":"La Bruine","n":8,"cw":458,"ch":340},{"id":"wolf","name":"Wolf","n":8,"cw":281,"ch":340},{"id":"yellowchic","name":"Yellow Chic","n":6,"cw":310,"ch":340},{"id":"orangelion","name":"Orange Lion","n":9,"cw":409,"ch":340},{"id":"blacksheep","name":"Black Sheep","n":9,"cw":353,"ch":340},{"id":"redoni","name":"Red Oni","n":7,"cw":426,"ch":340},{"id":"whitebull","name":"White Bull","n":7,"cw":398,"ch":340},{"id":"redphoenix","name":"Red Phoenix","n":8,"cw":340,"ch":340},{"id":"blackcat","name":"Black Cat","n":8,"cw":296,"ch":340},{"id":"whitehornninja","name":"White-Horn Ninja","n":7,"cw":316,"ch":340},{"id":"whiteowl","name":"White Owl","n":8,"cw":305,"ch":340},{"id":"whitemecha","name":"White Mecha","n":9,"cw":444,"ch":340}];
 
